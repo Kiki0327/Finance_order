@@ -1,6 +1,7 @@
 # Library imports
 
 import os
+from pdf2image import convert_from_path
 
 #################################################################################################################################
 
@@ -41,3 +42,33 @@ def change_name(directory=str, key=str):
         # print(f"\nOld name: {dirs[file]} \nNew name: {new_name}")
         # Rename the file
         os.rename(os.path.join(directory, key, dirs[file]), os.path.join(directory, key, new_name))
+
+def pdf_to_image(pdf_path, num_pages=None):
+    """
+    Function to convert PDF to images with png format and delete the original PDF file.
+
+    Args:
+        pdf_path (str): Path to the PDF file
+        num_pages (int, optional): Number of pages to convert. If None, convert all pages. Defaults to None.
+
+    Returns:
+        list: List of image file paths
+    """
+
+    # Convert PDF to images
+    images = convert_from_path(pdf_path)
+
+    # If num_pages is specified, limit the number of pages to convert
+    if num_pages is not None:
+        images = images[:num_pages]
+
+    for i, image in enumerate(images):
+        if len(images) > 1:
+            image_path = f"{os.path.splitext(pdf_path)[0]}_page_{i + 1}.png"
+        else:
+            image_path = f"{os.path.splitext(pdf_path)[0]}.png"
+        print(f"Saving image: {image_path}")
+        image.save(image_path, 'PNG')
+
+    # Delete the original PDF file
+    os.remove(pdf_path)
