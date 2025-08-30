@@ -2,6 +2,7 @@
 
 import os
 from pdf2image import convert_from_path
+from pypdf import (PdfReader, PdfWriter)
 
 #################################################################################################################################
 
@@ -72,3 +73,36 @@ def pdf_to_image(pdf_path, num_pages=None):
 
     # Delete the original PDF file
     os.remove(pdf_path)
+
+def delete_pdf_pages(pdf_path: str, pages_to_delete: list[int]):
+    """
+    Function to delete specific pages from a PDF file. The modified PDF will overwrite the original file.
+
+    Args:
+        pdf_path (str): Path to the PDF file.
+        pages_to_delete (list[int]): List of page numbers to delete (0-indexed).
+    
+    Returns:
+        None
+    """
+
+    # Read the existing PDF
+    reader = PdfReader(pdf_path)
+    # The total number of pages in the original PDF
+    total_pages = len(reader.pages)
+
+    # Create a PdfWriter object to write the modified PDF
+    writer = PdfWriter()
+
+    # If metadata exists, copy it to the writer
+    if reader.metadata:
+        writer.add_metadata({k: v for k, v in reader.metadata.items() if v is not None})
+
+    # Copy pages except those to be deleted
+    for i in range(total_pages):
+        if i not in pages_to_delete:
+            writer.add_page(reader.pages[i])
+    
+    # Write the modified PDF back to the original file
+    with open(pdf_path, "wb") as output_pdf:
+        writer.write(output_pdf)
