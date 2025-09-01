@@ -10,6 +10,10 @@ from pypdf import (PdfReader, PdfWriter)
 
 dict_paths = {'payments':'G:\Mi unidad\Documentos\Finanzas\Pagos'}
 
+# Dictionary with vars
+
+dict_vars = {'password_extract':'1144106817'}
+
 #################################################################################################################################
 
 # Functions
