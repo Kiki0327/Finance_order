@@ -110,3 +110,34 @@ def delete_pdf_pages(pdf_path: str, pages_to_delete: list[int]):
     # Write the modified PDF back to the original file
     with open(pdf_path, "wb") as output_pdf:
         writer.write(output_pdf)
+
+def join_pdfs(pdf_paths: list[str], output_path: str):
+    """
+    Function to join multiple PDF files into a single PDF file.
+
+    Args:
+        pdf_paths (list[str]): List of paths to the PDF files to be joined.
+        output_path (str): Path to save the joined PDF file.
+    
+    Returns:
+        None
+    """
+
+    # Create a PdfWriter object to write the combined PDF
+    writer = PdfWriter()
+
+    for pdf_path in pdf_paths:
+        # Read each PDF file
+        reader = PdfReader(pdf_path)
+
+        # If metadata exists, copy it to the writer
+        if reader.metadata:
+            writer.add_metadata({k: v for k, v in reader.metadata.items() if v is not None})
+
+        # Add all pages from the current PDF to the writer
+        for page in reader.pages:
+            writer.add_page(page)
+    
+    # Write the combined PDF to the specified output path
+    with open(output_path, "wb") as output_pdf:
+        writer.write(output_pdf)
