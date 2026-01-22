@@ -141,3 +141,6 @@ def join_pdfs(pdf_paths: list[str], output_path: str):
     # Write the combined PDF to the specified output path
     with open(output_path, "wb") as output_pdf:
         writer.write(output_pdf)
+
+def new_fun ():
+    pass
