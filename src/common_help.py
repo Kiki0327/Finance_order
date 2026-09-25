@@ -1,6 +1,7 @@
 # Library imports
 
 import os
+from io import BytesIO
 from pdf2image import convert_from_path
 from pypdf import (PdfReader, PdfWriter)
 
@@ -110,6 +111,36 @@ def delete_pdf_pages(pdf_path: str, pages_to_delete: list[int]):
     # Write the modified PDF back to the original file
     with open(pdf_path, "wb") as output_pdf:
         writer.write(output_pdf)
+
+def decrypt_pdf(pdf_path: str, password: str) -> str:
+    """
+    Remove the password from a PDF file and overwrite the original file.
+
+    Args:
+        pdf_path (str): Path to the PDF file.
+        password (str): Password required to open the PDF file.
+
+    Returns:
+        str: Path to the PDF file without a password.
+    """
+
+    reader = PdfReader(pdf_path)
+    if not reader.is_encrypted:
+        return pdf_path
+
+    if not reader.decrypt(password):
+        raise ValueError("Incorrect PDF password")
+
+    # Copy the unlocked PDF, including its pages and metadata.
+    writer = PdfWriter(clone_from=reader)
+    output = BytesIO()
+    writer.write(output)
+
+    # Write only after the complete PDF has been read and generated.
+    with open(pdf_path, "wb") as output_pdf:
+        output_pdf.write(output.getvalue())
+
+    return pdf_path
 
 def join_pdfs(pdf_paths: list[str], output_path: str):
     """
